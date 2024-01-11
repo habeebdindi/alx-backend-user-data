@@ -29,12 +29,14 @@ class RedactingFormatter(logging.Formatter):
                             super(RedactingFormatter, self).format(record),
                             self.SEPARATOR)
 
+
 def filter_datum(fields: List[str], redaction: str,
                  message: str, separator: str) -> str:
     """This function returns the log message obfuscated"""
     patt = re.compile(r'(\w+)=([a-zA-Z0-9@\.\-\(\)\ \:\^\<\>\~\$\%\@\?\!\/]*)')
     return re.sub(patt, lambda y: y.group(1) + '=' + redaction
                   if y.group(1) in fields else y.group(0), message)
+
 
 def get_logger() -> logging.Logger:
     """ Takes no arguments and return a logger object """
@@ -47,6 +49,7 @@ def get_logger() -> logging.Logger:
     logger.addHandler(sh)
     return logger
 
+
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """Use mysql connector python module to connect to MySQL database"""
     return mysql.connector.connect(
@@ -55,6 +58,7 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
         user=os.getenv("PERSONAL_DATA_DB_USERNAME", "localhost"),
         password=os.getenv("PERSONAL_DATA_DB_PASSWORD", ""),
     )
+
 
 def main() -> None:
     """ Read and filter data """
