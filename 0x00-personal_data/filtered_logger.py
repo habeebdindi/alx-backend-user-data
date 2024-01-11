@@ -3,6 +3,10 @@
 import re
 from typing import List
 import logging
+import csv
+import os
+import mysql.connector
+PII_FIELDS = ("name", "email", "phone", "ssn", "ip")
 
 
 class RedactingFormatter(logging.Formatter):
@@ -42,3 +46,35 @@ def get_logger() -> logging.Logger:
     sh.setFormatter(formatter)
     logger.addHandler(sh)
     return logger
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """Use mysql connector python module to connect to MySQL database"""
+    return mysql.connector.connect(
+        host=os.getenv("PERSONAL_DATA_DB_HOST", "root"),
+        database=os.getenv("PERSONAL_DATA_DB_NAME"),
+        user=os.getenv("PERSONAL_DATA_DB_USERNAME", "localhost"),
+        password=os.getenv("PERSONAL_DATA_DB_PASSWORD", ""),
+    )
+
+def main() -> None:
+    """ Read and filter data """
+    connection = get_db()
+    sql_select_Query = "SELECT * FROM users"
+    cursor = connection.cursor()
+    cursor.execute(sql_select_Query)
+    records = cursor.fetchall()
+    for row in records:
+        message = "name={};email={};phone={};ssn={};password={};ip={};\
+            last_login={};user_agent={};"\
+            .format(row[0], row[1], row[2], row[3], row[4], row[5],
+                    row[6], row[7])
+        log_record = logging.LogRecord(
+            "my_logger", logging.INFO, None, None, message, None, None)
+        formatter = RedactingFormatter(PII_FIELDS)
+        formatter.format(log_record)
+    cursor.close()
+    db.close()
+
+
+if __name__ == '__main__':
+    main()
