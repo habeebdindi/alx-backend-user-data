@@ -7,6 +7,7 @@ from flask import request
 class Auth:
     """ Defines the auth class
     """
+
     def __init__(self):
         """ Initializes the class
         """
