@@ -27,8 +27,8 @@ class Auth:
         """ Returns None
         """
         try:
-            return request.get("Authorization")
-        except:
+            return request.headers.get("Authorization")
+        except Exception:
             return None
 
     def current_user(self, request=None) -> TypeVar('User'):
