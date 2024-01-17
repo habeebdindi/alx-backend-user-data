@@ -29,6 +29,7 @@ class BasicAuth(Auth):
 
             current_user: Use all methods to authenticate user for request.
     """
+
     def extract_base64_authorization_header(self, auth_header: str) -> str:
         """ Return Base64 part of auth header for a basic authentication. """
         if auth_header is None or type(auth_header) is not str:
