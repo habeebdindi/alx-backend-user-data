@@ -2,7 +2,6 @@
 """ Auth module
 """
 
-from user import User
 from db import DB
 from typing import TypeVar
 import bcrypt
